@@ -1,0 +1,43 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <omp.h>
+
+void sequential_sort(std::vector<unsigned int>& X)
+{
+    unsigned int N = X.size();
+    std::vector<unsigned int> tmp(N);
+
+    #pragma omp parallel for
+    for (int i = 0; i < (int)N; i++)
+    {
+        unsigned int count = 0;
+
+        for (unsigned int j = 0; j < N; j++)
+        {
+            if (X[j] < X[i] || (X[j] == X[i] && j < i))
+                count++;
+        }
+
+        tmp[count] = X[i];
+    }
+
+    std::copy(tmp.begin(), tmp.end(), X.begin());
+}
+
+int main()
+{
+    std::vector<unsigned int> X = {5, 3, 8, 3, 1, 9};
+
+    std::cout << "Before sorting:\n";
+    for (auto x : X)
+        std::cout << x << " ";
+
+    sequential_sort(X);
+
+    std::cout << "\n\nAfter sorting:\n";
+    for (auto x : X)
+        std::cout << x << " ";
+
+    return 0;
+}
